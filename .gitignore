@@ -1,0 +1,6 @@
+.env
+*.key
+*.pem
+*.age
+secrets.nix
+result
