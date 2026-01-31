@@ -24,7 +24,6 @@
     tree
     discord-ptb
     onlyoffice-desktopeditors
-    protonup-ng
   ];
 
   home.sessionVariables = {

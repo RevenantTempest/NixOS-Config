@@ -34,7 +34,6 @@ in
   ];
 
   environment.systemPackages = [
-    pkgs-unstable.google-chrome
     chromeDesktop
     pkgs.virt-manager
   ];
