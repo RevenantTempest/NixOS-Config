@@ -1,12 +1,11 @@
 { config, pkgs, pkgs-unstable, ... }:
 
 let
-  # Use unstable Chrome for latest features
-  chromeScaled = pkgs.makeDesktopItem {
-    name = "google-chrome-scaled";
-    desktopName = "Google Chrome (Scaled)";
+  chromeDesktop = pkgs.makeDesktopItem {
+    name = "google-chrome";
+    desktopName = "Google Chrome";
     genericName = "Web Browser";
-    exec = "${pkgs-unstable.google-chrome}/bin/google-chrome-stable --ozone-platform=wayland --enable-features=UseOzonePlatform --force-device-scale-factor=1.25 %U";
+    exec = "${pkgs-unstable.google-chrome}/bin/google-chrome-stable --ozone-platform=wayland --enable-features=UseOzonePlatform,AcceleratedVideoDecodeLinuxGL,AcceleratedVideoDecodeLinuxZeroCopyGL,VaapiVideoDecodeLinuxGL --use-gl=desktop %U";
     icon = "google-chrome";
     terminal = false;
     categories = [ "Network" "WebBrowser" ];
@@ -34,10 +33,9 @@ in
     })
   ];
 
-  # User applications (unstable)
   environment.systemPackages = [
     pkgs-unstable.google-chrome
-    chromeScaled
-    pkgs.virt-manager  # Keep virt-manager on stable since it's system-level
+    chromeDesktop
+    pkgs.virt-manager
   ];
 }
