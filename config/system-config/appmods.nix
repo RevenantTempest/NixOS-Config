@@ -1,22 +1,16 @@
-{ config, pkgs, pkgs-unstable, ... }:
+{ config, pkgs, pkgs-unstable, lib, ... }:
 
 let
-  chromeDesktop = pkgs.makeDesktopItem {
-    name = "google-chrome";
-    desktopName = "Google Chrome";
-    genericName = "Web Browser";
-    exec = "${pkgs-unstable.google-chrome}/bin/google-chrome-stable --ozone-platform=wayland --enable-features=UseOzonePlatform,AcceleratedVideoDecodeLinuxGL,AcceleratedVideoDecodeLinuxZeroCopyGL,VaapiVideoDecodeLinuxGL --use-gl=desktop %U";
-    icon = "google-chrome";
-    terminal = false;
-    categories = [ "Network" "WebBrowser" ];
-    mimeTypes = [
-      "text/html"
-      "text/xml"
-      "application/xhtml+xml"
-      "x-scheme-handler/http"
-      "x-scheme-handler/https"
-    ];
-  };
+  # Define all your flags in one place
+  chromeFlags = [
+    "--ozone-platform=wayland"
+    "--force-device-scale-factor=1.25"
+    "--enable-features=UseOzonePlatform,AcceleratedVideoDecodeLinuxGL,AcceleratedVideoDecodeLinuxZeroCopyGL,VaapiVideoDecodeLinuxGL,VaapiVideoEncoder,VaapiVideoDecoder"
+    "--use-gl=desktop"
+    "--ignore-gpu-blocklist"
+    "--enable-gpu-rasterization"
+    "--enable-zero-copy"
+  ];
 in
 {
   nixpkgs.overlays = [
@@ -33,8 +27,9 @@ in
     })
   ];
 
+  # User applications (unstable)
   environment.systemPackages = [
-    chromeDesktop
-    pkgs.virt-manager
+    pkgs-unstable.google-chrome
+    pkgs.virt-manager  # Keep virt-manager on stable since it's system-level
   ];
 }
