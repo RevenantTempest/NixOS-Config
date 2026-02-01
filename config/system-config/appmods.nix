@@ -1,7 +1,6 @@
 { config, pkgs, pkgs-unstable, lib, ... }:
 
 let
-  # Define all your flags in one place
   chromeFlags = [
     "--ozone-platform=wayland"
     "--force-device-scale-factor=1.25"
@@ -14,6 +13,13 @@ let
 in
 {
   nixpkgs.overlays = [
+    # This modifies the package so the icon and flags are baked in correctly
+    (final: prev: {
+      google-chrome = prev.google-chrome.override {
+        commandLineArgs = lib.concatStringsSep " " chromeFlags;
+      };
+    })
+
     (final: prev: {
       virt-manager = prev.virt-manager.overrideAttrs (old: {
         nativeBuildInputs = (old.nativeBuildInputs or []) ++ [ prev.makeWrapper ];
@@ -27,9 +33,9 @@ in
     })
   ];
 
-  # User applications (unstable)
   environment.systemPackages = [
+    # 1. Put Chrome back here (System level handles icons better)
     pkgs-unstable.google-chrome
-    pkgs.virt-manager  # Keep virt-manager on stable since it's system-level
+    pkgs.virt-manager
   ];
 }

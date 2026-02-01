@@ -3,7 +3,6 @@
 {
   programs.steam = {
     enable = true;
-    # Using unstable for the Steam package itself and its session
     package = pkgs-unstable.steam;
     gamescopeSession.enable = true;
     remotePlay.openFirewall = true;
@@ -13,21 +12,21 @@
 
   programs.gamemode.enable = true;
 
-  # Gaming utilities and Heroic (All from Unstable)
+  # Gaming utilities and Faugus (All from Unstable)
   environment.systemPackages = with pkgs-unstable; [
     # The Launcher
-    heroic
+    faugus-launcher
 
-    # Essential for managing GE-Proton versions in Heroic/Steam
-    protonup-qt
+    # Managing GE-Proton versions in Faugus/Steam
+    protonplus
 
     # Performance and Overlay
     mangohud
     gamescope
 
-    # System requirements for many Heroic/Epic games
+    # Possible System Requirements
     winetricks
-    wineWowPackages.unstableFull # Using unstable full wine for best compatibility
+    wineWowPackages.unstableFull
 
     # Extra
     xsettingsd

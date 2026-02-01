@@ -56,6 +56,16 @@ in
   services.desktopManager.plasma6.enable = true;
   programs.xwayland.enable = true;
 
+  environment.pathsToLink = [ "/share/icons" "/share/applications" ];
+
+  # This ensures KDE/Plasma can see the icons installed by Home Manager
+  environment.sessionVariables = {
+    XDG_DATA_DIRS = [
+      "$HOME/.nix-profile/share"
+      "/run/current-system/sw/share"
+      "/usr/share"
+    ];
+  };
 
 
 
