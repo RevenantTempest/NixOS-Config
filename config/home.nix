@@ -6,14 +6,7 @@
     stateVersion = "25.11";
   };
 
-  # Fixes "small words" in GTK apps like Faugus Launcher and Virt-Manager
-  gtk = {
-    enable = true;
-    font = {
-      name = "Noto Sans"; # Or your preferred font
-      size = 12;
-    };
-  };
+  nixpkgs.config.allowUnfree = true;
 
   programs.git.enable = true;
 
@@ -35,9 +28,9 @@
     onlyoffice-desktopeditors
   ];
 
+
   home.sessionVariables = {
     STEAM_EXTRA_COMPAT_TOOLS_PATHS = "\${HOME}/.steam/root/compatibilitytools.d";
-
     # Global scaling for GTK apps to match your 1.25 Chrome scale
     GDK_DPI_SCALE = "1.25";
     # Forces apps to use Wayland where possible

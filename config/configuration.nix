@@ -1,13 +1,12 @@
 { config, lib, pkgs, pkgs-unstable, username, homeDirectory, configDirectory, ... }:
 
-
 let
   # Helper to prepend a directory path to a list of filenames
   fromDir = dir: files: map (f: dir + "/${f}") files;
 in
 
 {
-  imports = 
+  imports =
     [ ./hardware-configuration.nix ]
     ++ fromDir ./system-config [
       "appmods.nix"
@@ -33,8 +32,6 @@ in
    "video=HDMI-A-1:3840x2160@60"
   ];
 
-
-
   networking.hostName = "nixos";
   networking.networkmanager.enable = true;
 
@@ -46,7 +43,6 @@ in
     autoRepeatDelay = 200;
     autoRepeatInterval = 35;
     updateDbusEnvironment = true;
-
   };
 
   services.displayManager.sddm = {
@@ -57,24 +53,16 @@ in
   services.desktopManager.plasma6.enable = true;
   programs.xwayland.enable = true;
 
-# 1. Force NixOS to link the applications folder into the system profile
-  # This ensures /run/current-system/sw/share/applications is fully populated
   environment.pathsToLink = [ "/share/applications" ];
 
-  # 2. Tell Plasma 6 to explicitly look at the NixOS system profile for desktop files
-  # This is the "Pure" way to fix indexing issues in Wayland/Plasma 6
   environment.extraInit = ''
     export XDG_DATA_DIRS="$XDG_DATA_DIRS:/run/current-system/sw/share"
   '';
-
-
 
   hardware.graphics = {
     enable = true;
     enable32Bit = true;
   };
-
-
 
   services.pipewire = {
     enable = true;
@@ -97,37 +85,49 @@ in
     fastfetch
     python3
     desktop-file-utils
-    google-chrome
-    chromium
     vlc
+    google-chrome # Ensure the base package is installed
 
+    # Create the custom desktop entry
+  (makeDesktopItem {
+      name = "chrome-stable"; # Changed ID to force a fresh index
+      desktopName = "Google Chrome"; # Changed Name slightly
+      genericName = "Web Browser";
+      exec = "google-chrome-stable --force-device-scale-factor=1.25 --enable-features=VaapiVideoDecodeLinuxGL,VaapiVideoEncoder,Vulkan,VulkanFromANGLE,DefaultANGLEVulkan,VaapiIgnoreDriverChecks,VaapiVideoDecoder,PlatformHEVCDecoderSupport,UseMultiPlaneFormatForHardwareVideo --ozone-platform-hint=auto %U";
+      icon = "google-chrome";
+      categories = [ "Network" "WebBrowser" ];
+      terminal = false;
+      mimeTypes = [ "text/html" "text/xml" "application/xhtml+xml" "x-scheme-handler/http" "x-scheme-handler/https" ];
+      extraConfig = {
+        StartupWMClass = "google-chrome";
+      };
+    })
   ];
 
   programs.firefox.enable = true;
   programs.chromium.enable = true;
+
   environment.variables = {
-    # This affects Google Chrome specifically
-    CHROME_FLAGS = "--force-device-scale-factor=1.25 --enable-features=VaapiVideoDecodeLinuxGL,VaapiVideoEncoder,Vulkan,VulkanFromANGLE,DefaultANGLEVulkan,VaapiIgnoreDriverChecks,VaapiVideoDecoder,PlatformHEVCDecoderSupport,UseMultiPlaneFormatForHardwareVideo";
-
-    # This affects Chromium, Brave, and others
-    CHROMIUM_FLAGS = "--force-device-scale-factor=1.25 --enable-features=VaapiVideoDecodeLinuxGL,VaapiVideoEncoder,Vulkan,VulkanFromANGLE,DefaultANGLEVulkan,VaapiIgnoreDriverChecks,VaapiVideoDecoder,PlatformHEVCDecoderSupport,UseMultiPlaneFormatForHardwareVideo";
-
-    # Keep your existing variables
     GDK_SCALE = "2";
     GDK_DPI_SCALE = "0.5";
     KWIN_DRM_ALLOW_TEAR = "1";
     NIXOS_OZONE_WL = "1";
   };
 
-  # Native Wayland support for Chrome/Chromium/Electron apps
   environment.sessionVariables = {
     NIXOS_OZONE_WL = "1";
   };
 
+  system.activationScripts.refresh-desktop-database = {
+    text = ''
+      ${pkgs.desktop-file-utils}/bin/update-desktop-database /run/current-system/sw/share/applications || true
+    '';
+  };
 
   nix.settings = {
     experimental-features = [ "nix-command" "flakes" ];
     warn-dirty = false;
   };
+
   system.stateVersion = "25.11";
 }
