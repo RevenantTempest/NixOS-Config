@@ -45,6 +45,7 @@ in
     videoDrivers = [ "amdgpu" ];
     autoRepeatDelay = 200;
     autoRepeatInterval = 35;
+    updateDbusEnvironment = true;
 
   };
 
@@ -56,16 +57,15 @@ in
   services.desktopManager.plasma6.enable = true;
   programs.xwayland.enable = true;
 
-  environment.pathsToLink = [ "/share/icons" "/share/applications" ];
+# 1. Force NixOS to link the applications folder into the system profile
+  # This ensures /run/current-system/sw/share/applications is fully populated
+  environment.pathsToLink = [ "/share/applications" ];
 
-  # This ensures KDE/Plasma can see the icons installed by Home Manager
-  environment.sessionVariables = {
-    XDG_DATA_DIRS = [
-      "$HOME/.nix-profile/share"
-      "/run/current-system/sw/share"
-      "/usr/share"
-    ];
-  };
+  # 2. Tell Plasma 6 to explicitly look at the NixOS system profile for desktop files
+  # This is the "Pure" way to fix indexing issues in Wayland/Plasma 6
+  environment.extraInit = ''
+    export XDG_DATA_DIRS="$XDG_DATA_DIRS:/run/current-system/sw/share"
+  '';
 
 
 
@@ -74,13 +74,7 @@ in
     enable32Bit = true;
   };
 
-  environment.variables = {
-    GDK_SCALE = "2";
-    GDK_DPI_SCALE = "0.5";
-    KWIN_DRM_ALLOW_TEAR = "1";
-    NIXOS_OZONE_WL = "1";
 
-  };
 
   services.pipewire = {
     enable = true;
@@ -95,8 +89,6 @@ in
     extraGroups = [ "wheel" ];
   };
 
-  programs.firefox.enable = true;
-
   environment.systemPackages = with pkgs; [
     vim
     nano
@@ -104,8 +96,34 @@ in
     git
     fastfetch
     python3
+    desktop-file-utils
+    google-chrome
+    chromium
     vlc
+
   ];
+
+  programs.firefox.enable = true;
+  programs.chromium.enable = true;
+  environment.variables = {
+    # This affects Google Chrome specifically
+    CHROME_FLAGS = "--force-device-scale-factor=1.25 --enable-features=VaapiVideoDecodeLinuxGL,VaapiVideoEncoder,Vulkan,VulkanFromANGLE,DefaultANGLEVulkan,VaapiIgnoreDriverChecks,VaapiVideoDecoder,PlatformHEVCDecoderSupport,UseMultiPlaneFormatForHardwareVideo";
+
+    # This affects Chromium, Brave, and others
+    CHROMIUM_FLAGS = "--force-device-scale-factor=1.25 --enable-features=VaapiVideoDecodeLinuxGL,VaapiVideoEncoder,Vulkan,VulkanFromANGLE,DefaultANGLEVulkan,VaapiIgnoreDriverChecks,VaapiVideoDecoder,PlatformHEVCDecoderSupport,UseMultiPlaneFormatForHardwareVideo";
+
+    # Keep your existing variables
+    GDK_SCALE = "2";
+    GDK_DPI_SCALE = "0.5";
+    KWIN_DRM_ALLOW_TEAR = "1";
+    NIXOS_OZONE_WL = "1";
+  };
+
+  # Native Wayland support for Chrome/Chromium/Electron apps
+  environment.sessionVariables = {
+    NIXOS_OZONE_WL = "1";
+  };
+
 
   nix.settings = {
     experimental-features = [ "nix-command" "flakes" ];

@@ -43,7 +43,7 @@
               useGlobalPkgs = false;
               useUserPackages = true;
               users.${username} = import ./home.nix;
-              backupFileExtension = "backup";
+              backupFileExtension = "hm-backup";
               
               extraSpecialArgs = {
                 inherit username homeDirectory configDirectory backupDirectory;
