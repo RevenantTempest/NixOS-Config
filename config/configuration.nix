@@ -86,7 +86,8 @@ in
     python3
     desktop-file-utils
     vlc
-    google-chrome # Ensure the base package is installed
+    google-chrome
+    psmisc
 
     # Create the custom desktop entry
   (makeDesktopItem {
