@@ -1,10 +1,8 @@
 { config, lib, pkgs, pkgs-unstable, username, homeDirectory, configDirectory, ... }:
 
 let
-  # Helper to prepend a directory path to a list of filenames
   fromDir = dir: files: map (f: dir + "/${f}") files;
 in
-
 {
   imports =
     [ ./hardware-configuration.nix ]
@@ -14,6 +12,7 @@ in
       "routes.nix"
     ]
     ++ fromDir ./modules [
+      "applications.nix"
       "vm.nix"
       "games.nix"
       "obs.nix"
@@ -34,7 +33,6 @@ in
 
   networking.hostName = "nixos";
   networking.networkmanager.enable = true;
-
   time.timeZone = "America/Detroit";
 
   services.xserver = {
@@ -53,8 +51,10 @@ in
   services.desktopManager.plasma6.enable = true;
   programs.xwayland.enable = true;
 
+  # Force NixOS to link the applications folder into the system profile
   environment.pathsToLink = [ "/share/applications" ];
 
+  # Tell Plasma 6 to explicitly look at the NixOS system profile for desktop files
   environment.extraInit = ''
     export XDG_DATA_DIRS="$XDG_DATA_DIRS:/run/current-system/sw/share"
   '';
@@ -72,12 +72,6 @@ in
     jack.enable = true;
   };
 
-  services.avahi = {
-    enable = true;
-    nssmdns4 = true;
-    openFirewall = true;
-  };
-
   services.printing = {
     enable = true;
     drivers = with pkgs; [
@@ -87,43 +81,20 @@ in
     ];
   };
 
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true;
+    openFirewall = true;
+  };
+
   users.users.${username} = {
     isNormalUser = true;
     extraGroups = [ "wheel" ];
   };
 
-  environment.systemPackages = with pkgs; [
-    vim
-    nano
-    wget
-    git
-    fastfetch
-    python3
-    desktop-file-utils
-    vlc
-    google-chrome
-    psmisc
-
-    # Create the custom desktop entry
-  (makeDesktopItem {
-      name = "chrome-stable"; # Changed ID to force a fresh index
-      desktopName = "Google Chrome"; # Changed Name slightly
-      genericName = "Web Browser";
-      exec = "google-chrome-stable --force-device-scale-factor=1.25 --enable-features=VaapiVideoDecodeLinuxGL,VaapiVideoEncoder,Vulkan,VulkanFromANGLE,DefaultANGLEVulkan,VaapiIgnoreDriverChecks,VaapiVideoDecoder,PlatformHEVCDecoderSupport,UseMultiPlaneFormatForHardwareVideo --ozone-platform-hint=auto %U";
-      icon = "google-chrome";
-      categories = [ "Network" "WebBrowser" ];
-      terminal = false;
-      mimeTypes = [ "text/html" "text/xml" "application/xhtml+xml" "x-scheme-handler/http" "x-scheme-handler/https" ];
-      extraConfig = {
-        StartupWMClass = "google-chrome";
-      };
-    })
-  ];
-
-  programs.firefox.enable = true;
-  programs.chromium.enable = true;
-
   environment.variables = {
+    CHROME_FLAGS = "--force-device-scale-factor=1.25 --enable-features=VaapiVideoDecodeLinuxGL,VaapiVideoEncoder,Vulkan,VulkanFromANGLE,DefaultANGLEVulkan,VaapiIgnoreDriverChecks,VaapiVideoDecoder,PlatformHEVCDecoderSupport,UseMultiPlaneFormatForHardwareVideo";
+    CHROMIUM_FLAGS = "--force-device-scale-factor=1.25 --enable-features=VaapiVideoDecodeLinuxGL,VaapiVideoEncoder,Vulkan,VulkanFromANGLE,DefaultANGLEVulkan,VaapiIgnoreDriverChecks,VaapiVideoDecoder,PlatformHEVCDecoderSupport,UseMultiPlaneFormatForHardwareVideo";
     GDK_SCALE = "2";
     GDK_DPI_SCALE = "0.5";
     KWIN_DRM_ALLOW_TEAR = "1";
@@ -132,13 +103,9 @@ in
 
   environment.sessionVariables = {
     NIXOS_OZONE_WL = "1";
+    STEAM_EXTRA_COMPAT_TOOLS_PATHS = "/home/${username}/.steam/root/compatibilitytools.d";
   };
 
-  system.activationScripts.refresh-desktop-database = {
-    text = ''
-      ${pkgs.desktop-file-utils}/bin/update-desktop-database /run/current-system/sw/share/applications || true
-    '';
-  };
 
   nix.settings = {
     experimental-features = [ "nix-command" "flakes" ];
