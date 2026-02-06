@@ -17,22 +17,20 @@
 
   programs.git.enable = true;
 
-  # Minimal home.nix
   home.sessionVariables = {
     GDK_DPI_SCALE = "1.25";
     NIXOS_OZONE_WL = "1";
   };
 
-  # Create the labwc config directory and autostart file
-  xdg.configFile."labwc/autostart".text = ''
-    # Start your Quickshell setup
-    quickshell &
+  # --- Labwc Configuration ---
 
-    # Set a wallpaper
-    swaybg -m fill -i ${config.home.homeDirectory}/Pictures/wallpaper.jpg &
+  # Combined Autostart (Only one block allowed)
+  # 3. Update autostart to just run 'quickshell'
+  xdg.configFile."labwc/autostart".text = ''
+    sleep 1 && quickshell &
   '';
 
-  # Create a basic labwc menu so you aren't stuck
+  # Labwc Right-click Menu
   xdg.configFile."labwc/menu.xml".text = ''
     <?xml version="1.0" encoding="UTF-8"?>
     <openbox_menu>
@@ -44,9 +42,9 @@
     </openbox_menu>
   '';
 
-  # 2. A Minimal Quickshell Bar (shell.qml)
-  # This creates a simple blue bar at the top of the screen
-  xdg.configFile."quickshell/shell.qml".text = ''
+  # --- Quickshell Configuration ---
+
+xdg.configFile."quickshell/default/shell.qml".text = ''
     import QtQuick
     import Quickshell
     import Quickshell.Wayland
@@ -65,13 +63,13 @@
 
             Rectangle {
                 anchors.fill: parent
-                color: "#1a1b26" // Dark bar
+                color: "#1a1b26"
 
                 Text {
                     anchors.centerIn: parent
-                    text: "Quickshell on Labwc"
+                    text: "Quickshell basic bar"
                     color: "white"
-                    font.pixelSize = 16
+                    font.pixelSize: 16
                 }
             }
         }
