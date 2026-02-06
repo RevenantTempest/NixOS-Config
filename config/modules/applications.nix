@@ -3,6 +3,18 @@
 {
   # System-wide applications
   environment.systemPackages = with pkgs; [
+
+    # LabWC Packages
+    labwc
+    wayland-utils
+    wl-clipboard
+    swaybg
+    fuzzel
+    kdePackages.konsole
+    pkgs-unstable.quickshell
+
+
+
     # Core utilities
     vim
     nano

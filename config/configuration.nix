@@ -45,9 +45,16 @@ in
 
   services.displayManager.sddm = {
     enable = true;
-    settings.General.DisplayServer = "wayland";
+    wayland.enable = true;
+    settings = {
+      General = {
+        DisplayServer = "wayland";
+        GreeterEnvironment = "QT_WAYLAND_SHELL_INTEGRATION=layer-shell";
+      };
+    };
   };
 
+  programs.labwc.enable = true;
   services.desktopManager.plasma6.enable = true;
   programs.xwayland.enable = true;
 
