@@ -52,7 +52,7 @@
     import Quickshell.Wayland
 
     ShellRoot {
-        VariantsWindow {
+        WaylandSurfaceWindow {
             anchors {
                 top: parent.top
                 left: parent.left
@@ -60,18 +60,18 @@
             }
             height: 40
 
-            WlrLayerShell.layer: WlrLayerShell.LayerTop
-            WlrLayerShell.namespace: "topbar"
+            layerShell.layer: LayerShell.LayerTop
+            layerShell.namespace: "topbar"
 
             Rectangle {
                 anchors.fill: parent
-                color: "#1a1b26" // Tokyo Night Dark
+                color: "#1a1b26" // Dark bar
 
                 Text {
                     anchors.centerIn: parent
-                    text: "Quickshell is Running on Labwc!"
+                    text: "Quickshell on Labwc"
                     color: "white"
-                    font.pixelSize: 16
+                    font.pixelSize = 16
                 }
             }
         }
