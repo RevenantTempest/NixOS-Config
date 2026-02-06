@@ -6,7 +6,7 @@
     stateVersion = "25.11";
   };
 
-  # Fixes "small words" in GTK apps like Faugus Launcher and Virt-Manager
+  # Fixes "small words" in GTK apps like Faugus Launcher
   gtk = {
     enable = true;
     font = {
@@ -17,7 +17,7 @@
 
   programs.git.enable = true;
 
-  # Minimal home.nix - most config is now in modules/applications.nix
+  # Minimal home.nix
   home.sessionVariables = {
     GDK_DPI_SCALE = "1.25";
     NIXOS_OZONE_WL = "1";
