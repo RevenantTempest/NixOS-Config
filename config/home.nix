@@ -49,30 +49,26 @@ xdg.configFile."quickshell/default/shell.qml".text = ''
     import Quickshell
     import Quickshell.Wayland
 
-    ShellRoot {
-        WaylandSurfaceWindow {
-            anchors {
-                top: parent.top
-                left: parent.left
-                right: parent.right
-            }
-            height: 40
+    PanelWindow {
+      anchors {
+        top: true
+        left: true
+        right: true
+      }
 
-            layerShell.layer: LayerShell.LayerTop
-            layerShell.namespace: "topbar"
+      implicitHeight: 40
 
-            Rectangle {
-                anchors.fill: parent
-                color: "#1a1b26"
+      Rectangle {
+        anchors.fill: parent
+        color: "#1a1b26"
 
-                Text {
-                    anchors.centerIn: parent
-                    text: "Quickshell basic bar"
-                    color: "white"
-                    font.pixelSize: 16
-                }
-            }
+        Text {
+          anchors.centerIn: parent
+          text: "Quickshell Panel Bar"
+          color: "white"
+          font.pixelSize: 16
         }
+      }
     }
   '';
 
