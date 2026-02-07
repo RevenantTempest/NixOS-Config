@@ -31,6 +31,8 @@ in
    "video=HDMI-A-1:3840x2160@60"
   ];
 
+  nixpkgs.config.allowUnfree = true;
+
   networking.hostName = "nixos";
   networking.networkmanager.enable = true;
   time.timeZone = "America/Detroit";

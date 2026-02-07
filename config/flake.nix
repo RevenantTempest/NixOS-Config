@@ -9,14 +9,14 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    plasma-manager = {
-      url = "github:nix-community/plasma-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.home-manager.follows = "home-manager";
+    # Official Noctalia Shell (tracking main branch)
+    noctalia = {
+      url = "github:noctalia-dev/noctalia-shell/main";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, ... }:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, noctalia, ... }:
     let
       system = "x86_64-linux";
       username = "nate";
@@ -28,6 +28,7 @@
       nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
         inherit system;
 
+        # Pass all special args to NixOS system modules
         specialArgs = {
           inherit username homeDirectory configDirectory backupDirectory;
           pkgs-unstable = import nixpkgs-unstable {
@@ -37,22 +38,15 @@
         };
 
         modules = [
-          {
-            nixpkgs.config.allowUnfree = true;
-          }
-          
           ./configuration.nix
-
           home-manager.nixosModules.home-manager
           {
             home-manager = {
-              useGlobalPkgs = false;
+              useGlobalPkgs = true;
               useUserPackages = true;
               users.${username} = import ./home.nix;
-              backupFileExtension = "hm-backup";
-              
               extraSpecialArgs = {
-                inherit username homeDirectory configDirectory backupDirectory;
+                inherit username homeDirectory configDirectory backupDirectory noctalia;
                 pkgs-unstable = import nixpkgs-unstable {
                   inherit system;
                   config.allowUnfree = true;

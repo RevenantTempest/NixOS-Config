@@ -1,4 +1,4 @@
-{ config, pkgs, pkgs-unstable, username, homeDirectory, configDirectory, ... }:
+{ config, pkgs, pkgs-unstable, username, homeDirectory, configDirectory, noctalia, ... }:
 
 {
   home = {
@@ -7,7 +7,8 @@
   };
 
   imports = [
-    ./quickshell/shell.nix
+    #./quickshell/shell.nix
+    noctalia.homeModules.default
   ];
 
   # Fixes "small words" in GTK apps like Faugus Launcher
@@ -26,12 +27,52 @@
     NIXOS_OZONE_WL = "1";
   };
 
+  # --- Noctalia Quickshell Configuration ---
+  programs.noctalia-shell = {
+    enable = true;
+    settings = {
+      bar = {
+        density = "compact";
+        position = "bottom";
+        showCapsule = false;
+        widgets = {
+          left = [
+            { id = "ControlCenter"; useDistroLogo = true; }
+            { id = "Network"; }
+            { id = "Bluetooth"; }
+          ];
+          center = [
+            { hideUnoccupied = false; id = "Workspace"; labelMode = "none"; }
+          ];
+          right = [
+            { alwaysShowPercentage = false; id = "Battery"; warningThreshold = 30; }
+            {
+              formatHorizontal = "HH:mm";
+              formatVertical = "HH mm";
+              id = "Clock";
+              useMonospacedFont = true;
+              usePrimaryColor = true;
+            }
+          ];
+        };
+      };
+      colorSchemes.predefinedScheme = "Monochrome";
+      general = {
+        avatarImage = "${homeDirectory}/.face";
+        radiusRatio = 0.2;
+      };
+      location = {
+        monthBeforeDay = true;
+        name = "Detroit, USA";
+      };
+    };
+  };
+
   # --- Labwc Configuration ---
 
   # Combined Autostart (Only one block allowed)
-  # 3. Update autostart to just run 'quickshell'
   xdg.configFile."labwc/autostart".text = ''
-    sleep 1 && quickshell &
+    sleep 1 && systemctl --user start noctalia-shell
   '';
 
   # Labwc Right-click Menu
@@ -45,5 +86,4 @@
       </menu>
     </openbox_menu>
   '';
-
 }
