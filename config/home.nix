@@ -6,6 +6,10 @@
     stateVersion = "25.11";
   };
 
+  imports = [
+    ./quickshell/shell.nix
+  ];
+
   # Fixes "small words" in GTK apps like Faugus Launcher
   gtk = {
     enable = true;
@@ -40,36 +44,6 @@
         <item label="Exit"><action name="Exit" /></item>
       </menu>
     </openbox_menu>
-  '';
-
-  # --- Quickshell Configuration ---
-
-xdg.configFile."quickshell/default/shell.qml".text = ''
-    import QtQuick
-    import Quickshell
-    import Quickshell.Wayland
-
-    PanelWindow {
-      anchors {
-        top: true
-        left: true
-        right: true
-      }
-
-      implicitHeight: 40
-
-      Rectangle {
-        anchors.fill: parent
-        color: "#1a1b26"
-
-        Text {
-          anchors.centerIn: parent
-          text: "Quickshell Panel Bar"
-          color: "white"
-          font.pixelSize: 16
-        }
-      }
-    }
   '';
 
 }
