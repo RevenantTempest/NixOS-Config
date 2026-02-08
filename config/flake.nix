@@ -9,26 +9,34 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Official Noctalia Shell (tracking main branch)
-    noctalia = {
-      url = "github:noctalia-dev/noctalia-shell/main";
+    dank-material-shell = {
+      url = "github:AvengeMedia/DankMaterialShell/stable";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+
+    dgop = {
+      url = "github:AvengeMedia/dgop";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, noctalia, ... }:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, dank-material-shell, dgop, ... }:
     let
       system = "x86_64-linux";
       username = "nate";
       homeDirectory = "/home/${username}";
       configDirectory = "${homeDirectory}/nixos-config/config";
       backupDirectory = "${homeDirectory}/nixos-config";
+
+      pkgs = import nixpkgs {
+        inherit system;
+        config.allowUnfree = true;
+      };
     in
     {
       nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
         inherit system;
 
-        # Pass all special args to NixOS system modules
         specialArgs = {
           inherit username homeDirectory configDirectory backupDirectory;
           pkgs-unstable = import nixpkgs-unstable {
@@ -44,9 +52,15 @@
             home-manager = {
               useGlobalPkgs = true;
               useUserPackages = true;
-              users.${username} = import ./home.nix;
+              users.${username} = import ./home.nix {
+                inherit pkgs username homeDirectory configDirectory inputs;
+                inputs = {
+                  dankMaterialShell = dank-material-shell;
+                  dgop = dgop;
+                };
+              };
               extraSpecialArgs = {
-                inherit username homeDirectory configDirectory backupDirectory noctalia;
+                inherit username homeDirectory configDirectory backupDirectory;
                 pkgs-unstable = import nixpkgs-unstable {
                   inherit system;
                   config.allowUnfree = true;

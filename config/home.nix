@@ -1,4 +1,4 @@
-{ config, pkgs, pkgs-unstable, username, homeDirectory, configDirectory, noctalia, lib, ... }:
+{ config, pkgs, pkgs-unstable, username, homeDirectory, configDirectory, lib, inputs, ... }:
 
 {
   home = {
@@ -7,8 +7,7 @@
   };
 
   imports = [
-    ./quickshell/bar/taskbar.nix
-    noctalia.homeModules.default
+    inputs.dankMaterialShell.homeModules.dank-material-shell
   ];
 
   # Fixes "small words" in GTK apps like Faugus Launcher
@@ -20,14 +19,38 @@
     };
   };
 
-  programs.git.enable = true;
 
   home.sessionVariables = {
+    XDG_SESSION_TYPE = "wayland";
+    QT_QPA_PLATFORM = "wayland";
+    GDK_BACKEND = "wayland";
     GDK_DPI_SCALE = "1.25";
     NIXOS_OZONE_WL = "1";
   };
 
+  home.packages = with pkgs; [
+    inputs.dankMaterialShell.packages.${pkgs.system}.default
+  ];
 
+  programs.git.enable = true;
+
+  # Dank Material Shell
+  programs.dank-material-shell = {
+    enable = true;
+    enableSystemMonitoring = true;
+    dgop.package = inputs.dgop.packages.${pkgs.system}.default;
+    # Optional: Customize settings
+    settings = {
+      # Example settings (check Dank Material Shell docs for full options)
+      panel = {
+        position = "bottom";
+        height = 48;
+      };
+      workspace = {
+        count = 5;
+      };
+    };
+  };
 
   # Labwc Right-click Menu
   xdg.configFile."labwc/menu.xml".text = ''
@@ -59,53 +82,11 @@
 
 
 
-  # --- Noctalia Quickshell Configuration ---
-  programs.noctalia-shell = {
-    enable = true;
-    settings = {
-      bar = {
-        density = "compact";
-        position = "bottom";
-        showCapsule = false;
-        widgets = {
-          left = [
-            { id = "ControlCenter"; useDistroLogo = true; }
-            { id = "Network"; }
-            { id = "Bluetooth"; }
-          ];
-          center = [
-            { hideUnoccupied = false; id = "Workspace"; labelMode = "none"; }
-          ];
-          right = [
-            { alwaysShowPercentage = false; id = "Battery"; warningThreshold = 30; }
-            {
-              formatHorizontal = "HH:mm";
-              formatVertical = "HH mm";
-              id = "Clock";
-              useMonospacedFont = true;
-              usePrimaryColor = true;
-            }
-          ];
-        };
-      };
-      colorSchemes.predefinedScheme = "Monochrome";
-      general = {
-        avatarImage = "${homeDirectory}/.face";
-        radiusRatio = 0.2;
-      };
-      location = {
-        monthBeforeDay = true;
-        name = "Detroit, USA";
-      };
-    };
-  };
-
   # --- Labwc Configuration ---
 
   # Combined Autostart (Only one block allowed)
   xdg.configFile."labwc/autostart".text = ''
-    #sleep 1 && systemctl --user start noctalia-shell
-    sleep 1
+    #sleep 1
   '';
 
 
