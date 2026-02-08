@@ -9,18 +9,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    dank-material-shell = {
-      url = "github:AvengeMedia/DankMaterialShell/stable";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
-
-    dgop = {
-      url = "github:AvengeMedia/dgop";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, dank-material-shell, dgop, ... }:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, ... }:
     let
       system = "x86_64-linux";
       username = "nate";
@@ -52,13 +43,7 @@
             home-manager = {
               useGlobalPkgs = true;
               useUserPackages = true;
-              users.${username} = import ./home.nix {
-                inherit pkgs username homeDirectory configDirectory inputs;
-                inputs = {
-                  dankMaterialShell = dank-material-shell;
-                  dgop = dgop;
-                };
-              };
+              users.${username} = import ./home.nix;
               extraSpecialArgs = {
                 inherit username homeDirectory configDirectory backupDirectory;
                 pkgs-unstable = import nixpkgs-unstable {

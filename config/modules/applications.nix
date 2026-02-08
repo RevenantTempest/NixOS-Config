@@ -11,7 +11,7 @@
     swaybg
     fuzzel
     kdePackages.konsole
-    pkgs-unstable.quickshell
+
 
 
 
