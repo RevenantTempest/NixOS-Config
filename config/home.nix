@@ -72,7 +72,8 @@
 
   # Combined Autostart (Only one block allowed)
   xdg.configFile."labwc/autostart".text = ''
-    sleep 1 && systemctl --user start noctalia-shell
+    #sleep 1 && systemctl --user start noctalia-shell
+    sleep 1
   '';
 
   # Labwc Right-click Menu
