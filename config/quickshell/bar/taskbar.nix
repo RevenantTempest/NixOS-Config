@@ -24,6 +24,16 @@ let
 
         property var toplevelManager: ToplevelManager
 
+        // Property to hold the current time, updated by the timer
+        property date currentTime: new Date()
+
+        Timer {
+            interval: 1000 // Update every second
+            running: true
+            repeat: true
+            onTriggered: panel.currentTime = new Date()
+        }
+
         Process {
             id: launcherProcess
             command: ["${launcherBin}"]
@@ -77,20 +87,15 @@ let
                         }
 
                         onClicked: {
-                            console.log("Interacting with: " + modelData.title);
-
                             if (modelData.active) {
-                                // If already active, try to minimize it
-                                // Some versions of Quickshell use 'minimized' property
                                 if (modelData.hasOwnProperty("minimized")) {
                                     modelData.minimized = true;
                                 }
                             } else {
-                                // If not active, try to bring to front
-                                // Try focus first, then activate if available
-                                modelData.focus();
                                 if (modelData.hasOwnProperty("activate")) {
                                     modelData.activate();
+                                } else if (modelData.hasOwnProperty("requestActivate")) {
+                                    modelData.requestActivate();
                                 }
                             }
                         }
@@ -98,19 +103,24 @@ let
                 }
             }
 
+            // Updated Clock Area
             RowLayout {
                 spacing: 15
                 Column {
                     Text {
-                        text: Qt.formatDateTime(new Date(), "hh:mm:ss")
+                        // Bind to the currentTime property
+                        text: Qt.formatDateTime(panel.currentTime, "hh:mm:ss")
                         color: "white"
                         font.pixelSize: 14
                         font.bold: true
+                        horizontalAlignment: Text.AlignRight
                     }
                     Text {
-                        text: Qt.formatDateTime(new Date(), "ddd, MMM d")
+                        // Bind to the currentTime property
+                        text: Qt.formatDateTime(panel.currentTime, "ddd, MMM d")
                         color: "#a9b1d6"
                         font.pixelSize: 10
+                        horizontalAlignment: Text.AlignRight
                     }
                 }
             }
@@ -119,7 +129,6 @@ let
   '';
 in
 {
-  # ... (rest of the file remains the same as previous)
   xdg.configFile."quickshell/default/taskbar.qml".source = pkgs.writeText "taskbar.qml" taskbarQML;
 
   home.packages = with pkgs; [
