@@ -1,12 +1,15 @@
 { config, pkgs, ... }:
 
 let
+  launcherBin = "${pkgs.faugus-launcher}/bin/faugus-launcher";
+
   taskbarQML = ''
     import QtQuick
     import QtQuick.Controls
     import QtQuick.Layouts
     import Quickshell
     import Quickshell.Wayland
+    import Quickshell.Io
 
     PanelWindow {
         id: panel
@@ -19,7 +22,12 @@ let
         exclusionMode: ExclusionMode.Exclusive
         color: "#1a1b26"
 
-        property var toplevelManager: Quickshell.Wayland.ToplevelManager
+        property var toplevelManager: ToplevelManager
+
+        Process {
+            id: launcherProcess
+            command: ["${launcherBin}"]
+        }
 
         RowLayout {
             anchors.fill: parent
@@ -27,7 +35,6 @@ let
             anchors.rightMargin: 12
             spacing: 12
 
-            // 1. Application Launcher Button
             Button {
                 id: launcherButton
                 contentItem: Text {
@@ -41,14 +48,9 @@ let
                     color: launcherButton.hovered ? "#3d59a1" : "transparent"
                     radius: 4
                 }
-                onClicked: {
-                    console.log("Attempting to launch faugus-launcher...");
-                    // Use Qt's application launching mechanism
-                    Qt.openUrlExternally("exec://faugus-launcher");
-                }
+                onClicked: launcherProcess.running = true
             }
 
-            // 2. Task List (Centered-Left)
             Row {
                 Layout.fillWidth: true
                 spacing: 8
@@ -74,29 +76,41 @@ let
                             border.width: 1
                         }
 
-                        onClicked: modelData.focus()
+                        onClicked: {
+                            console.log("Interacting with: " + modelData.title);
+
+                            if (modelData.active) {
+                                // If already active, try to minimize it
+                                // Some versions of Quickshell use 'minimized' property
+                                if (modelData.hasOwnProperty("minimized")) {
+                                    modelData.minimized = true;
+                                }
+                            } else {
+                                // If not active, try to bring to front
+                                // Try focus first, then activate if available
+                                modelData.focus();
+                                if (modelData.hasOwnProperty("activate")) {
+                                    modelData.activate();
+                                }
+                            }
+                        }
                     }
                 }
             }
 
-            // 3. System Tray / Widgets Area (Right)
             RowLayout {
                 spacing: 15
-
-                // Clock & Date
                 Column {
                     Text {
                         text: Qt.formatDateTime(new Date(), "hh:mm:ss")
                         color: "white"
                         font.pixelSize: 14
                         font.bold: true
-                        horizontalAlignment: Text.AlignRight
                     }
                     Text {
                         text: Qt.formatDateTime(new Date(), "ddd, MMM d")
                         color: "#a9b1d6"
                         font.pixelSize: 10
-                        horizontalAlignment: Text.AlignRight
                     }
                 }
             }
@@ -105,12 +119,12 @@ let
   '';
 in
 {
-  # Write the QML file
+  # ... (rest of the file remains the same as previous)
   xdg.configFile."quickshell/default/taskbar.qml".source = pkgs.writeText "taskbar.qml" taskbarQML;
 
-  # Only install quickshell here
   home.packages = with pkgs; [
     quickshell
+    faugus-launcher
   ];
 
   systemd.user.services.quickshell-taskbar = {
