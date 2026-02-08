@@ -25,6 +25,7 @@
     desktop-file-utils
     vlc
     psmisc
+    wlr-randr
 
     # Browsers
     google-chrome
