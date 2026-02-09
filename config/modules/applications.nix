@@ -28,8 +28,8 @@
     wlr-randr
 
     # Browsers
-    google-chrome
     chromium
+    #google-chrome
 
     # Unstable packages
     pkgs-unstable.tree
@@ -37,7 +37,7 @@
     pkgs-unstable.onlyoffice-desktopeditors
 
     # Custom Desktop Entries
-    (makeDesktopItem {
+/*    (makeDesktopItem {
       name = "chrome-stable";
       desktopName = "Google Chrome";
       genericName = "Web Browser";
@@ -49,7 +49,7 @@
       extraConfig = {
         StartupWMClass = "google-chrome";
       };
-    })
+    }) */
   ];
 
   # Enable Firefox and Chromium programs

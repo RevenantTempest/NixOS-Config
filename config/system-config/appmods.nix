@@ -18,3 +18,4 @@
     pkgs.google-chrome
   ];
 }
+
