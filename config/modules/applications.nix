@@ -26,6 +26,7 @@
     vlc
     psmisc
     wlr-randr
+    p7zip
 
     # Browsers
     chromium
