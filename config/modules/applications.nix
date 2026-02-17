@@ -36,6 +36,7 @@
     pkgs-unstable.tree
     pkgs-unstable.discord-ptb
     pkgs-unstable.onlyoffice-desktopeditors
+    pkgs-unstable.zoom-us
 
     # Custom Desktop Entries
 /*    (makeDesktopItem {
