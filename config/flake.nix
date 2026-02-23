@@ -9,9 +9,18 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # --- DMS additions ---
+    dgop = {
+      url = "github:AvengeMedia/dgop";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+    dms = {
+      url = "github:AvengeMedia/DankMaterialShell/stable";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, ... }:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, dms, dgop, ... }@inputs:
     let
       system = "x86_64-linux";
       username = "nate";
@@ -29,7 +38,7 @@
         inherit system;
 
         specialArgs = {
-          inherit username homeDirectory configDirectory backupDirectory;
+          inherit username homeDirectory configDirectory backupDirectory inputs;
           pkgs-unstable = import nixpkgs-unstable {
             inherit system;
             config.allowUnfree = true;
@@ -45,7 +54,7 @@
               useUserPackages = true;
               users.${username} = import ./home.nix;
               extraSpecialArgs = {
-                inherit username homeDirectory configDirectory backupDirectory;
+                inherit username homeDirectory configDirectory backupDirectory inputs;
                 pkgs-unstable = import nixpkgs-unstable {
                   inherit system;
                   config.allowUnfree = true;
