@@ -60,6 +60,7 @@
 
 
     kdePackages.konsole
+    alacritty
 
 
 
