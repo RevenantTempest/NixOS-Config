@@ -5,11 +5,60 @@
   environment.systemPackages = with pkgs; [
 
     # LabWC Packages
+# Core UI
     labwc
-    wayland-utils
+    waybar
+    rofi
+    dunst
+    swww
+    foot
+
+    # Lock & Idle
+    hyprlock
+    swayidle
+
+    # Theming & Graphics
+    matugen
+    imagemagick
+    papirus-icon-theme
+    adw-gtk3
+    qt5.qtwayland
+    qt6.qtwayland
+    libsForQt5.qt5ct
+    kdePackages.qt6ct
+
+    # Utilities
     wl-clipboard
-    swaybg
-    fuzzel
+    cliphist
+    wl-clip-persist
+    playerctl
+    pavucontrol
+    pamixer
+    brightnessctl
+    jq
+    netcat-gnu
+    python311Packages.watchdog
+    alsa-utils
+
+    # Screenshots & Recording
+    grim
+    slurp
+    wf-recorder
+
+    # File Manager & Tools
+    xfce.thunar
+    xfce.xfce4-taskmanager
+    swayimg
+    mpv
+    ffmpeg
+    ffmpegthumbnailer
+    gammastep
+
+    # System Dialogs
+    networkmanagerapplet
+    lxqt.lxqt-policykit
+
+
     kdePackages.konsole
 
 

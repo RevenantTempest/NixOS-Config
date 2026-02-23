@@ -1,4 +1,4 @@
-{ config, pkgs, pkgs-unstable, username, homeDirectory, configDirectory, inputs, lib, dms, dgop, ... }:
+{ config, pkgs, pkgs-unstable, username, homeDirectory, configDirectory, inputs, lib, ... }:
 
 {
   home = {
@@ -7,7 +7,7 @@
   };
 
   imports = [
-    inputs.dms.homeModules.dank-material-shell
+
   ];
 
 
@@ -27,12 +27,6 @@
     GDK_BACKEND = "wayland";
     GDK_DPI_SCALE = "1.25";
     NIXOS_OZONE_WL = "1";
-  };
-
-
-  programs.dank-material-shell = {
-    enable = true;
-    dgop.package = inputs.dgop.packages.${pkgs.system}.default;
   };
 
 
