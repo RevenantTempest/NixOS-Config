@@ -3,16 +3,8 @@
 {
   # System-wide applications
   environment.systemPackages = with pkgs; [
-
-    # LabWC Packages
-# Core UI
-    labwc
-    alacritty
-
-
-
-
     # Core utilities
+    alacritty
     vim
     nano
     wget
@@ -27,7 +19,7 @@
 
     # Browsers
     chromium
-    #google-chrome
+    google-chrome
 
     # Unstable packages
     pkgs-unstable.tree
