@@ -44,7 +44,6 @@
   ];
 
   # Enable Firefox and Chromium programs
-  programs.firefox.enable = true;
   programs.chromium.enable = true;
 
   # Shell aliases

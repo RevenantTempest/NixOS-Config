@@ -20,6 +20,26 @@
     };
   };
 
+  programs.firefox = {
+    enable = true;
+    profiles.nate = {
+      settings = {
+        # UI Scaling (equivalent to --force-device-scale-factor=1.25)
+        "layout.css.devPixelsPerPx" = "2";
+
+        # Wayland
+        "widget.use-xdg-desktop-portal.file-picker" = 1;
+        "widget.use-xdg-desktop-portal.mime-handler" = 1;
+
+        # Hardware acceleration
+        "media.ffmpeg.vaapi.enabled" = true;
+        "media.hardware-video-decoding.force-enabled" = true;
+        "gfx.webrender.all" = true;
+        "gfx.webrender.compositor" = true;
+      };
+    };
+  };
+
 
   home.sessionVariables = {
     XDG_SESSION_TYPE = "wayland";
@@ -27,6 +47,7 @@
     GDK_BACKEND = "wayland";
     GDK_DPI_SCALE = "1.25";
     NIXOS_OZONE_WL = "1";
+    MOZ_ENABLE_WAYLAND = "1";
   };
 
 

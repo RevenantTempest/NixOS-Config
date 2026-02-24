@@ -45,6 +45,24 @@ in
     updateDbusEnvironment = true;
   };
 
+  xdg.portal = {
+    enable = true;
+    # This is the key: it tells NixOS which portal to use for which desktop
+    config = {
+      common = {
+        default = [ "gtk" ];
+      };
+      # Force KDE to use the KDE portal
+      plasma = {
+        default = [ "kde" ];
+      };
+      # Force labwc to use the WLR portal
+      labwc = {
+        default = [ "wlr" "gtk" ];
+      };
+    };
+  };
+
   services.displayManager.sddm = {
     enable = true;
     wayland.enable = true;
