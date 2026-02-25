@@ -1,9 +1,8 @@
-{ config, pkgs, pkgs-unstable, ... }:
+{ pkgs-unstable, ... }:
 
 {
   programs.obs-studio.enableVirtualCamera = true;
 
-  # OBS from unstable for latest features
   environment.systemPackages = [
     (pkgs-unstable.wrapOBS {
       plugins = with pkgs-unstable.obs-studio-plugins; [

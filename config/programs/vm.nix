@@ -1,21 +1,21 @@
-{ config, pkgs, lib, ... }:
+{ pkgs, vars, ... }:
 
 {
-
   programs.virt-manager.enable = true;
-  users.users.nate.extraGroups = [ "libvirtd" ];
+  users.users.${vars.user.name}.extraGroups = [ "libvirtd" ];
   networking.firewall.trustedInterfaces = [ "virbr0" ];
+
   services = {
     qemuGuest.enable = true;
     spice-vdagentd.enable = true;
   };
+
   virtualisation.libvirtd = {
     enable = true;
     qemu.vhostUserPackages = with pkgs; [ virtiofsd ];
     qemu.swtpm.enable = true;
   };
 
-  # VM packages
   environment.systemPackages = with pkgs; [
     virt-manager
     dnsmasq
@@ -25,7 +25,6 @@
     libtpms
   ];
 
-  # Visual Fix
   nixpkgs.overlays = [
     (final: prev: {
       virt-manager = prev.virt-manager.overrideAttrs (old: {
@@ -39,5 +38,4 @@
       });
     })
   ];
-
 }

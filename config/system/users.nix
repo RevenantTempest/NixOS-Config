@@ -1,0 +1,7 @@
+{ vars, ... }:
+{
+  users.users.${vars.user.name} = {
+    isNormalUser = true;
+    extraGroups = [ "wheel" ];
+  };
+}

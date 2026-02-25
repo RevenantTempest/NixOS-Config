@@ -1,5 +1,5 @@
 {
-  description = "NixOS Configuration";
+  description = "Modular NixOS Configuration";
 
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-25.11";
@@ -8,49 +8,25 @@
       url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
   };
 
   outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, ... }@inputs:
     let
-      system = "x86_64-linux";
-      username = "nate";
-      homeDirectory = "/home/${username}";
-      configDirectory = "${homeDirectory}/nixos-config/config";
-      backupDirectory = "${homeDirectory}/nixos-config";
-
-      pkgs = import nixpkgs {
-        inherit system;
-        config.allowUnfree = true;
-      };
+      vars = import ./variables.nix { inherit inputs nixpkgs nixpkgs-unstable; };
     in
     {
       nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
-        inherit system;
-
-        specialArgs = {
-          inherit username homeDirectory configDirectory backupDirectory inputs;
-          pkgs-unstable = import nixpkgs-unstable {
-            inherit system;
-            config.allowUnfree = true;
-          };
-        };
-
+        inherit (vars.sys) system;
+        specialArgs = { inherit vars inputs; pkgs-unstable = vars.pkgs-unstable; };
         modules = [
-          ./configuration.nix
+          ./hosts/nixos
           home-manager.nixosModules.home-manager
           {
             home-manager = {
               useGlobalPkgs = true;
               useUserPackages = true;
-              users.${username} = import ./home.nix;
-              extraSpecialArgs = {
-                inherit username homeDirectory configDirectory backupDirectory inputs;
-                pkgs-unstable = import nixpkgs-unstable {
-                  inherit system;
-                  config.allowUnfree = true;
-                };
-              };
+              users.${vars.user.name} = import ./home.nix;
+              extraSpecialArgs = { inherit vars inputs; pkgs-unstable = vars.pkgs-unstable; };
             };
           }
         ];
