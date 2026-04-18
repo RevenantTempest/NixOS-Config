@@ -1,0 +1,10 @@
+profile home {
+    # Left Monitor
+    output "DP-3" mode 3840x2160@144 position 0,2160
+
+    # Center Monitor (Primary)
+    output "DP-1" mode 3840x2160@239.914001 position 3845,2160
+
+    # Top Monitor
+    output "HDMI-A-1" mode 3840x2160@60 position 3845,0
+}

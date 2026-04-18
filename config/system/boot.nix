@@ -1,16 +1,23 @@
-{ pkgs, ... }:
+{ lib, vars, pkgs, ... }:
 
 {
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  # `linuxPackages_latest` can jump to very new kernels (e.g. 7.x) that may
+  # temporarily miss modules expected by initrd (such as aes_generic).
+  # Pin to LTS for stable module availability during early boot.
+  boot.kernelPackages = pkgs.linuxPackages;
+
+  # Ensure encryption-related modules are available in initrd for LUKS unlock.
+  boot.initrd.kernelModules = [ "aes_generic" "dm-crypt" ];
+
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.initrd.systemd.enable = true;
-  boot.initrd.kernelModules = [ "amdgpu" ];
-  boot.kernelModules = [ "amdgpu" ];
   boot.resumeDevice = "/dev/mapper/cryptswap";
-  boot.kernelParams = [
-   "video=DP-1:3840x2160@240"
-   "video=DP-3:3840x2160@144"
-   "video=HDMI-A-1:3840x2160@60"
+
+  # Multi-monitor kernel parameters are only needed on the gaming desktop profile.
+  boot.kernelParams = lib.mkIf (vars.profile.systemType == "gaming") [
+    "video=DP-1:3840x2160@240"
+    "video=DP-3:3840x2160@144"
+    "video=HDMI-A-1:3840x2160@60"
   ];
 }

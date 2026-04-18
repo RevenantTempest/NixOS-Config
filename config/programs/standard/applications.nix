@@ -2,36 +2,37 @@
 
 {
   environment.systemPackages = with pkgs; [
-    # Core utilities
+  # Stable Packages
+  # Core utilities
     alacritty
     vim
     nano
     wget
     git
+    ripgrep
     fastfetch
     python3
     desktop-file-utils
     vlc
     psmisc
-    wlr-randr
     p7zip
+    file
 
     # Browsers
     chromium
     google-chrome
 
-    # Unstable packages
-    pkgs-unstable.tree
-    pkgs-unstable.discord-ptb
-    pkgs-unstable.onlyoffice-desktopeditors
-    pkgs-unstable.zoom-us
-  ];
+  # Unstable Packages
+  ] ++ (with pkgs-unstable; [
+    tree
+    discord-ptb
+    onlyoffice-desktopeditors
+    zoom-us
+  ]);
 
   programs.chromium.enable = true;
 
-  environment.shellAliases = {
-    rebuild = "sudo nixos-rebuild switch --flake path:${vars.paths.config}#nixos";
-  };
+  environment.shellAliases = vars.aliases;
 
   programs.bash = {
     interactiveShellInit = ''

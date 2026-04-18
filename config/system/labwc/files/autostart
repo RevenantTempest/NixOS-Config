@@ -1,0 +1,50 @@
+# Autostart File
+
+# Clean Startup. Black Screen Until Loaded.
+
+
+# Display Configuration
+kanshi >/dev/null 2>&1 &
+swaybg -i ~/nixos-config/config/system/labwc/nixos-background.jpg >/dev/null 2>&1 &
+
+# Notification Daemon
+mako >/dev/null 2>&1 &
+
+# Keep clipboard alive after closing apps
+wl-clip-persist --clipboard both >/dev/null 2>&1 &
+
+# Start clipboard history
+wl-paste --watch cliphist store &
+
+# Center Mouse on Login
+(
+  sleep 1.5
+
+  # Warp mouse to bottom-right, then back to center of DP-1
+  wlrctl pointer move 10000 10000
+  wlrctl pointer move -1920 -1080
+  sleep 0.5
+
+) >/dev/null 2>&1 &
+
+
+# Sleep and Wake
+(
+  sleep 2
+  swayidle -w \
+    timeout 300 'swaylock -f' \
+    timeout 600 'systemctl suspend' \
+    before-sleep 'swaylock -f'
+  sway-audio-idle-inhibit
+  ) >/dev/null 2>&1 &
+
+
+# XDG Portal Configs
+dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=labwc
+systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+export XDG_CURRENT_DESKTOP=labwc
+export XDG_MENU_PREFIX=arch
+
+# Restart XDG Portal
+systemctl --user restart xdg-desktop-portal xdg-desktop-portal-wlr
+

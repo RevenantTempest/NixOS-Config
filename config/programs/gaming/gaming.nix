@@ -12,12 +12,15 @@
     STEAM_EXTRA_COMPAT_TOOLS_PATHS = "${vars.user.home}/.steam/root/compatibilitytools.d";
   };
 
-  environment.systemPackages = with pkgs-unstable; [
+  environment.systemPackages = [
+    pkgs.krita
+  ] ++ (with pkgs-unstable; [
+    prismlauncher
     faugus-launcher
     protonplus
     mangohud
     gamescope
     winetricks
-    wineWowPackages.unstableFull
-  ];
+    wineWow64Packages.unstableFull
+  ]);
 }
