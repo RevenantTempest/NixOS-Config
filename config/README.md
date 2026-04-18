@@ -166,25 +166,80 @@ sudo nixos-rebuild switch --flake path:/home/<user>/nixos-config/config#nixos
 
 File: `services/backup.nix`
 
-### What it does
+Three backup services are defined:
 
-- Creates `nixos-config-backup` **systemd oneshot service**
-- Creates `nixos-config-backup` **systemd timer**
-  - starts after boot (`OnBootSec=10m`)
-  - runs every hour (`OnUnitActiveSec=1h`)
-  - uses `Persistent=true` so missed runs trigger later
+1. `nixos-config-backup-full.service`
+   - Scope: full repository backup (entire config repo)
+   - Staging behavior: `git add -A`
+   - Commit message format: `Full backup: TIMESTAMP`
+   - Trigger: **manual only** (no timer)
 
-### Backup script flow
+2. `nixos-config-backup-gaming.service`
+   - Scope: gaming profile backup
+   - Staged paths:
+     - `programs/gaming/`
+     - `programs/standard/`
+     - `system/`
+     - `services/`
+     - `variables.nix`
+     - `flake.nix`
+     - `flake.lock`
+     - `hosts/`
+     - `README.md`
+   - Commit message format: `Gaming profile backup: TIMESTAMP`
+
+3. `nixos-config-backup-server.service`
+   - Scope: server profile backup
+   - Staged paths:
+     - `programs/server/`
+     - `programs/standard/`
+     - `system/`
+     - `services/`
+     - `variables.nix`
+     - `flake.nix`
+     - `flake.lock`
+     - `hosts/`
+     - `README.md`
+   - Commit message format: `Server profile backup: TIMESTAMP`
+
+### Automatic timers (every 12 hours)
+
+Both profile timers use:
+
+- `OnBootSec=10min`
+- `OnUnitActiveSec=12h`
+- `Persistent=true`
+
+Conditional enablement:
+
+- `nixos-config-backup-gaming.timer` is enabled only when `profile.systemType == "gaming"`
+- `nixos-config-backup-server.timer` is enabled only when `profile.systemType == "server"`
+- Full backup has no timer and is manual-only.
+
+### Manual trigger commands
+
+```bash
+# Full backup (always manual)
+sudo systemctl start nixos-config-backup-full.service
+
+# Gaming backup
+sudo systemctl start nixos-config-backup-gaming.service
+
+# Server backup
+sudo systemctl start nixos-config-backup-server.service
+```
+
+### Common backup script flow
+
+For each backup type, the script:
 
 1. Enters `vars.paths.backup`
 2. Verifies directory is a git repo
-3. Sets git identity from:
-   - `vars.git.username`
-   - `vars.git.email`
-4. Stages all changes (`git add -A`)
+3. Sets git identity from `vars.git.username` and `vars.git.email`
+4. Stages files for that backup type
 5. Exits cleanly if there is nothing to commit
 6. Detects current branch robustly (including fallback from origin HEAD)
-7. Commits with timestamp message
+7. Commits with timestamped backup-type message
 8. Pushes using `git push --set-upstream origin <branch>`
 
 ## Deploying on a new machine (step-by-step)
@@ -206,9 +261,18 @@ File: `services/backup.nix`
    ```bash
    sudo nixos-rebuild switch --flake path:$(pwd)#nixos
    ```
-9. **Verify backup timer**:
+9. **Verify backup services/timers**:
    ```bash
-   systemctl status nixos-config-backup.timer
+   # Full backup is manual only (service exists, no timer)
+   systemctl status nixos-config-backup-full.service
+
+   # Gaming profile systems
+   systemctl status nixos-config-backup-gaming.timer
+
+   # Server profile systems
+   systemctl status nixos-config-backup-server.timer
+
+   # List all backup timers currently active on this host
    systemctl list-timers | grep nixos-config-backup
    ```
 
