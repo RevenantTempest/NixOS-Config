@@ -18,16 +18,12 @@
     p7zip
     file
 
-    # Browsers
-    chromium
-    google-chrome
+
 
   # Unstable Packages
   ] ++ (with pkgs-unstable; [
     tree
-    discord-ptb
-    onlyoffice-desktopeditors
-    zoom-us
+
   ]);
 
   programs.chromium.enable = true;

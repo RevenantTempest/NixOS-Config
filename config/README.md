@@ -1,5 +1,4 @@
 # Modular NixOS Configuration
-# This is a Test
 
 This repository contains a modular NixOS + Home Manager setup that supports two profile styles:
 
