@@ -4,10 +4,10 @@
   # `linuxPackages_latest` can jump to very new kernels (e.g. 7.x) that may
   # temporarily miss modules expected by initrd (such as aes_generic).
   # Pin to LTS for stable module availability during early boot.
-  boot.kernelPackages = pkgs.linuxPackages;
+  boot.kernelPackages = pkgs.linuxPackages_6_19;
 
   # Ensure encryption-related modules are available in initrd for LUKS unlock.
-  boot.initrd.kernelModules = [ "aes_generic" "dm-crypt" ];
+  boot.initrd.kernelModules = [ "aes" "dm-crypt" ];
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
